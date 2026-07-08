@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>KADAVRA — Platforms — Acceso</title>
+  <title>KADAVRA â Platforms â Acceso</title>
   <style>
     body {
       margin: 0;
@@ -46,8 +46,8 @@
 </head>
 <body>
   <form id="login-form">
-    <h1>KADAVRA — Platforms</h1>
-    <input type="password" name="password" placeholder="Contraseña" required autofocus />
+    <h1>KADAVRA â Platforms</h1>
+    <input type="password" name="password" placeholder="ContraseÃ±a" required autofocus />
     <button type="submit">Entrar</button>
     <p class="error" id="error" hidden></p>
   </form>
@@ -67,7 +67,7 @@
         const params = new URLSearchParams(window.location.search);
         window.location.href = params.get("next") || "/";
       } else {
-        errorEl.textContent = "Contraseña incorrecta.";
+        errorEl.textContent = "ContraseÃ±a incorrecta.";
         errorEl.hidden = false;
       }
     });

@@ -2,7 +2,7 @@ const crypto = require("crypto");
 
 const REDIS_KEY = "kadavra-platforms:registry";
 const REQUIRED_FIELDS = ["cliente", "plataforma", "ambiente"];
-const ALLOWED_AMBIENTES = ["Producción", "Prototipo", "Sandbox"];
+const ALLOWED_AMBIENTES = ["ProducciÃ³n", "Prototipo", "Sandbox"];
 const ALL_FIELDS = ["cliente", "proyecto", "plataforma", "cuenta", "recurso", "ambiente", "descripcion"];
 
 function sessionToken(password) {
@@ -71,7 +71,7 @@ module.exports = async function handler(req, res) {
         }
       }
       if (!ALLOWED_AMBIENTES.includes(input.ambiente)) {
-        res.status(400).json({ error: "Ambiente inválido" });
+        res.status(400).json({ error: "Ambiente invÃ¡lido" });
         return;
       }
       const records = await readRegistry();
