@@ -71,12 +71,7 @@ module.exports = async function handler(req, res) {
         }
       }
       if (!ALLOWED_AMBIENTES.includes(input.ambiente)) {
-        res.status(400).json({
-          error: "Ambiente inválido",
-          debugReceived: input.ambiente,
-          debugReceivedCodes: input.ambiente ? [...input.ambiente].map((c) => c.codePointAt(0).toString(16)) : null,
-          debugAllowedCodes: ALLOWED_AMBIENTES.map((a) => [...a].map((c) => c.codePointAt(0).toString(16))),
-        });
+        res.status(400).json({ error: "Ambiente inválido" });
         return;
       }
       const records = await readRegistry();
