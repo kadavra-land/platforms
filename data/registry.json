@@ -1,0 +1,52 @@
+[
+  {
+    "id": "b3f1a2c4-0001",
+    "cliente": "MM Logística",
+    "proyecto": "Sistema de logística",
+    "plataforma": "Supabase",
+    "cuenta": "draco-kad",
+    "recurso": "org kadavra.land, proyecto mm-logistica",
+    "ambiente": "Producción",
+    "descripcion": "Base de datos del sistema de logística"
+  },
+  {
+    "id": "b3f1a2c4-0002",
+    "cliente": "MM Logística",
+    "proyecto": "Sistema de logística",
+    "plataforma": "Google Cloud",
+    "cuenta": "gmasrih",
+    "recurso": "proyecto mm-logistica",
+    "ambiente": "Producción",
+    "descripcion": ""
+  },
+  {
+    "id": "b3f1a2c4-0003",
+    "cliente": "MM Logística",
+    "proyecto": "Sistema de logística",
+    "plataforma": "Vercel",
+    "cuenta": "gmasrih (interino)",
+    "recurso": "proyecto mmlogistica",
+    "ambiente": "Producción",
+    "descripcion": "Hosting del sistema"
+  },
+  {
+    "id": "b3f1a2c4-0004",
+    "cliente": "KADAVRA",
+    "proyecto": "kadavra-hq",
+    "plataforma": "GitHub",
+    "cuenta": "draco-kad",
+    "recurso": "repo kadavra-land/kadavra-hq",
+    "ambiente": "Producción",
+    "descripcion": "Repo corporativo"
+  },
+  {
+    "id": "b3f1a2c4-0005",
+    "cliente": "Gabriel",
+    "proyecto": "",
+    "plataforma": "Cloudflare",
+    "cuenta": "gmasrih",
+    "recurso": "dominio laplaza",
+    "ambiente": "Producción",
+    "descripcion": "DNS personal"
+  }
+]

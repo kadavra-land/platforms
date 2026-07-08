@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KADAVRA — Platforms</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>KADAVRA — Platforms</h1>
+    <button id="new-btn" type="button">+ Agregar registro</button>
+  </header>
+
+  <main>
+    <p id="error" class="error" hidden></p>
+    <table id="registry-table">
+      <thead>
+        <tr>
+          <th>Cliente</th>
+          <th>Proyecto</th>
+          <th>Plataforma</th>
+          <th>Cuenta / usuario</th>
+          <th>Recurso</th>
+          <th>Ambiente</th>
+          <th>Descripción</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="registry-body">
+        <tr><td colspan="8">Cargando…</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <dialog id="new-dialog">
+    <form id="new-form">
+      <h2>Nuevo registro</h2>
+      <label>Cliente <input name="cliente" required placeholder="Nombre del cliente, KADAVRA o Gabriel" /></label>
+      <label>Proyecto <input name="proyecto" placeholder="Nombre del proyecto" /></label>
+      <label>Plataforma <input name="plataforma" required placeholder="GitHub, Supabase, Vercel..." /></label>
+      <label>Cuenta / usuario <input name="cuenta" placeholder="Cuenta de acceso" /></label>
+      <label>Recurso <input name="recurso" placeholder="Nombre del recurso en la plataforma" /></label>
+      <label>Ambiente
+        <select name="ambiente" required>
+          <option value="Producción">Producción</option>
+          <option value="Prototipo">Prototipo</option>
+          <option value="Sandbox">Sandbox</option>
+        </select>
+      </label>
+      <label>Descripción <input name="descripcion" placeholder="Para qué sirve" /></label>
+      <div class="dialog-actions">
+        <button type="button" id="cancel-btn">Cancelar</button>
+        <button type="submit">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/app.js"></script>
+</body>
+</html>

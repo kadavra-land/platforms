@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KADAVRA — Platforms — Acceso</title>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0b1f33;
+    }
+    form {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 10px;
+      width: min(340px, 90vw);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    h1 { font-size: 1.1rem; margin: 0 0 1rem; color: #0b1f33; }
+    input {
+      width: 100%;
+      padding: 0.55rem 0.7rem;
+      border: 1px solid #dde1e6;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 0.9rem;
+      width: 100%;
+      padding: 0.6rem;
+      border: none;
+      border-radius: 6px;
+      background: #1a8a7a;
+      color: #fff;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    p.error { color: #b3261e; font-size: 0.85rem; margin-top: 0.6rem; }
+  </style>
+</head>
+<body>
+  <form id="login-form">
+    <h1>KADAVRA — Platforms</h1>
+    <input type="password" name="password" placeholder="Contraseña" required autofocus />
+    <button type="submit">Entrar</button>
+    <p class="error" id="error" hidden></p>
+  </form>
+  <script>
+    const form = document.getElementById("login-form");
+    const errorEl = document.getElementById("error");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      errorEl.hidden = true;
+      const password = new FormData(form).get("password");
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        const params = new URLSearchParams(window.location.search);
+        window.location.href = params.get("next") || "/";
+      } else {
+        errorEl.textContent = "Contraseña incorrecta.";
+        errorEl.hidden = false;
+      }
+    });
+  </script>
+</body>
+</html>

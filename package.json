@@ -1,0 +1,9 @@
+{
+  "name": "kadavra-platforms",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Registro interno de KADAVRA: clientes, proyectos, plataformas y recursos.",
+  "engines": {
+    "node": "20.x"
+  }
+}

@@ -1,0 +1,128 @@
+:root {
+  --navy: #0b1f33;
+  --blue: #1f4e79;
+  --teal: #1a8a7a;
+  --bg: #f6f7f9;
+  --border: #dde1e6;
+  --text: #1c2530;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Roboto", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 2rem;
+  background: var(--navy);
+  color: #fff;
+}
+
+header h1 {
+  font-size: 1.25rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  background: var(--teal);
+  color: #fff;
+}
+
+button:hover { opacity: 0.9; }
+
+#cancel-btn {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+main {
+  padding: 1.5rem 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th, td {
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+th {
+  background: #eef1f4;
+  color: var(--blue);
+  font-weight: 600;
+}
+
+tr:last-child td { border-bottom: none; }
+
+.delete-btn {
+  background: transparent;
+  color: #b3261e;
+  border: 1px solid #b3261e33;
+}
+
+.error {
+  background: #fdecea;
+  color: #b3261e;
+  border: 1px solid #f5c6c2;
+  padding: 0.6rem 0.9rem;
+  border-radius: 6px;
+}
+
+dialog {
+  border: none;
+  border-radius: 10px;
+  padding: 1.5rem;
+  width: min(480px, 90vw);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+}
+
+dialog::backdrop {
+  background: rgba(11, 31, 51, 0.5);
+}
+
+#new-form label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--blue);
+}
+
+#new-form input, #new-form select {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
