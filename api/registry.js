@@ -1,8 +1,6 @@
 const crypto = require("crypto");
 
-const REPO = "kadavra-land/platforms";
-const FILE_PATH = "data/registry.json";
-const GITHUB_API = `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`;
+const REDIS_KEY = "kadavra-platforms:registry";
 const REQUIRED_FIELDS = ["cliente", "plataforma", "ambiente"];
 const ALLOWED_AMBIENTES = ["Producción", "Prototipo", "Sandbox"];
 const ALL_FIELDS = ["cliente", "proyecto", "plataforma", "cuenta", "recurso", "ambiente", "descripcion"];
@@ -23,38 +21,27 @@ function sanitize(value) {
   return String(value ?? "").trim().slice(0, 300);
 }
 
-async function readRegistry() {
-  const res = await fetch(GITHUB_API, {
+async function redisCommand(...args) {
+  const res = await fetch(process.env.KV_REST_API_URL, {
+    method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.GITHUB_PLATFORMS_TOKEN}`,
-      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${process.env.KV_REST_API_TOKEN}`,
+      "Content-Type": "application/json",
     },
+    body: JSON.stringify(args),
   });
-  if (!res.ok) throw new Error(`GitHub read failed: ${res.status}`);
+  if (!res.ok) throw new Error(`Redis error: ${res.status}`);
   const json = await res.json();
-  const content = Buffer.from(json.content, "base64").toString("utf-8");
-  return { records: JSON.parse(content), sha: json.sha };
+  return json.result;
 }
 
-async function writeRegistry(records, sha, message) {
-  const content = Buffer.from(JSON.stringify(records, null, 2) + "\n", "utf-8").toString("base64");
-  const res = await fetch(GITHUB_API, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${process.env.GITHUB_PLATFORMS_TOKEN}`,
-      Accept: "application/vnd.github+json",
-    },
-    body: JSON.stringify({
-      message,
-      content,
-      sha,
-      committer: { name: "kadavra-platforms bot", email: "draco@kadavra.land" },
-    }),
-  });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`GitHub write failed: ${res.status} ${body}`);
-  }
+async function readRegistry() {
+  const raw = await redisCommand("GET", REDIS_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+async function writeRegistry(records) {
+  await redisCommand("SET", REDIS_KEY, JSON.stringify(records));
 }
 
 module.exports = async function handler(req, res) {
@@ -63,14 +50,14 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  if (!process.env.GITHUB_PLATFORMS_TOKEN) {
-    res.status(500).json({ error: "GITHUB_PLATFORMS_TOKEN no configurado en Vercel" });
+  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+    res.status(500).json({ error: "Redis (KV_REST_API_URL / KV_REST_API_TOKEN) no configurado en Vercel" });
     return;
   }
 
   try {
     if (req.method === "GET") {
-      const { records } = await readRegistry();
+      const records = await readRegistry();
       res.status(200).json(records);
       return;
     }
@@ -87,11 +74,11 @@ module.exports = async function handler(req, res) {
         res.status(400).json({ error: "Ambiente inválido" });
         return;
       }
-      const { records, sha } = await readRegistry();
+      const records = await readRegistry();
       const record = { id: crypto.randomUUID() };
       for (const field of ALL_FIELDS) record[field] = sanitize(input[field]);
       records.push(record);
-      await writeRegistry(records, sha, `Agrega registro: ${record.cliente} / ${record.plataforma}`);
+      await writeRegistry(records);
       res.status(201).json(record);
       return;
     }
@@ -102,19 +89,19 @@ module.exports = async function handler(req, res) {
         res.status(400).json({ error: "Falta id" });
         return;
       }
-      const { records, sha } = await readRegistry();
+      const records = await readRegistry();
       const next = records.filter((r) => r.id !== id);
       if (next.length === records.length) {
         res.status(404).json({ error: "Registro no encontrado" });
         return;
       }
-      await writeRegistry(next, sha, `Elimina registro: ${id}`);
+      await writeRegistry(next);
       res.status(200).json({ ok: true });
       return;
     }
 
     res.status(405).json({ error: "Method not allowed" });
   } catch (err) {
-    res.status(502).json({ error: "Error al conectar con el repositorio" });
+    res.status(502).json({ error: "Error al conectar con Redis" });
   }
 };
