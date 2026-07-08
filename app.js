@@ -4,6 +4,10 @@ const body = document.getElementById("registry-body");
 const errorEl = document.getElementById("error");
 const dialog = document.getElementById("new-dialog");
 const form = document.getElementById("new-form");
+const filterInputs = document.querySelectorAll("[data-filter]");
+
+let allRecords = [];
+const filters = {};
 
 function showError(message) {
   errorEl.textContent = message;
@@ -20,18 +24,44 @@ function escapeHtml(value) {
   }[c]));
 }
 
-function renderRows(records) {
+function displayValue(record, column) {
+  const value = record[column];
+  if (column === "ambiente") {
+    return Array.isArray(value) ? value.join(", ") : value;
+  }
+  return value;
+}
+
+function applyFilters(records) {
+  return records.filter((r) =>
+    COLUMNS.every((c) => {
+      const term = (filters[c] || "").trim().toLowerCase();
+      if (!term) return true;
+      return String(displayValue(r, c) ?? "").toLowerCase().includes(term);
+    })
+  );
+}
+
+function render() {
+  const records = applyFilters(allRecords);
   if (!records.length) {
-    body.innerHTML = '<tr><td colspan="8">Sin registros todavía.</td></tr>';
+    body.innerHTML = `<tr><td colspan="8">${allRecords.length ? "Sin resultados para este filtro." : "Sin registros todavía."}</td></tr>`;
     return;
   }
   body.innerHTML = records.map((r) => `
     <tr data-id="${escapeHtml(r.id)}">
-      ${COLUMNS.map((c) => `<td>${escapeHtml(r[c])}</td>`).join("")}
+      ${COLUMNS.map((c) => `<td>${escapeHtml(displayValue(r, c))}</td>`).join("")}
       <td><button class="delete-btn" data-id="${escapeHtml(r.id)}">Borrar</button></td>
     </tr>
   `).join("");
 }
+
+filterInputs.forEach((input) => {
+  input.addEventListener("input", () => {
+    filters[input.dataset.filter] = input.value;
+    render();
+  });
+});
 
 async function loadRegistry() {
   const res = await fetch("/api/registry");
@@ -44,8 +74,8 @@ async function loadRegistry() {
     return;
   }
   clearError();
-  const data = await res.json();
-  renderRows(data);
+  allRecords = await res.json();
+  render();
 }
 
 body.addEventListener("click", async (e) => {
@@ -76,7 +106,20 @@ document.getElementById("cancel-btn").addEventListener("click", () => dialog.clo
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const payload = Object.fromEntries(new FormData(form).entries());
+  const data = new FormData(form);
+  const payload = {
+    cliente: data.get("cliente"),
+    proyecto: data.get("proyecto"),
+    plataforma: data.get("plataforma"),
+    cuenta: data.get("cuenta"),
+    recurso: data.get("recurso"),
+    ambiente: data.getAll("ambiente"),
+    descripcion: data.get("descripcion"),
+  };
+  if (!payload.ambiente.length) {
+    showError("Selecciona al menos un ambiente.");
+    return;
+  }
   const submitBtn = form.querySelector('button[type="submit"]');
   submitBtn.disabled = true;
   try {

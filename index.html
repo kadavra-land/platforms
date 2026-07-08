@@ -26,6 +26,16 @@
           <th>Descripción</th>
           <th></th>
         </tr>
+        <tr class="filter-row">
+          <th><input type="text" data-filter="cliente" placeholder="Filtrar..." /></th>
+          <th><input type="text" data-filter="proyecto" placeholder="Filtrar..." /></th>
+          <th><input type="text" data-filter="plataforma" placeholder="Filtrar..." /></th>
+          <th><input type="text" data-filter="cuenta" placeholder="Filtrar..." /></th>
+          <th><input type="text" data-filter="recurso" placeholder="Filtrar..." /></th>
+          <th><input type="text" data-filter="ambiente" placeholder="Filtrar..." /></th>
+          <th><input type="text" data-filter="descripcion" placeholder="Filtrar..." /></th>
+          <th></th>
+        </tr>
       </thead>
       <tbody id="registry-body">
         <tr><td colspan="8">Cargando—</td></tr>
@@ -41,13 +51,12 @@
       <label>Plataforma <input name="plataforma" required placeholder="GitHub, Supabase, Vercel..." /></label>
       <label>Cuenta / usuario <input name="cuenta" placeholder="Cuenta de acceso" /></label>
       <label>Recurso <input name="recurso" placeholder="Nombre del recurso en la plataforma" /></label>
-      <label>Ambiente
-        <select name="ambiente" required>
-          <option value="Producción">Producción</option>
-          <option value="Prototipo">Prototipo</option>
-          <option value="Sandbox">Sandbox</option>
-        </select>
-      </label>
+      <fieldset class="ambiente-fieldset">
+        <legend>Ambiente</legend>
+        <label class="checkbox-label"><input type="checkbox" name="ambiente" value="Producción" /> Producción</label>
+        <label class="checkbox-label"><input type="checkbox" name="ambiente" value="Prototipo" /> Prototipo</label>
+        <label class="checkbox-label"><input type="checkbox" name="ambiente" value="Sandbox" /> Sandbox</label>
+      </fieldset>
       <label>Descripción <input name="descripcion" placeholder="Para qué sirve" /></label>
       <div class="dialog-actions">
         <button type="button" id="cancel-btn">Cancelar</button>

@@ -1,9 +1,9 @@
 const crypto = require("crypto");
 
 const REDIS_KEY = "kadavra-platforms:registry";
-const REQUIRED_FIELDS = ["cliente", "plataforma", "ambiente"];
+const REQUIRED_FIELDS = ["cliente", "plataforma"];
 const ALLOWED_AMBIENTES = ["Producción", "Prototipo", "Sandbox"];
-const ALL_FIELDS = ["cliente", "proyecto", "plataforma", "cuenta", "recurso", "ambiente", "descripcion"];
+const TEXT_FIELDS = ["cliente", "proyecto", "plataforma", "cuenta", "recurso", "descripcion"];
 
 function sessionToken(password) {
   return crypto.createHash("sha256").update(password + ":kadavra-platforms-session").digest("hex");
@@ -19,6 +19,14 @@ function isAuthed(req) {
 
 function sanitize(value) {
   return String(value ?? "").trim().slice(0, 300);
+}
+
+function sanitizeAmbiente(value) {
+  const arr = Array.isArray(value) ? value : [value];
+  const clean = [...new Set(arr.map((v) => String(v ?? "").trim()))].filter((v) =>
+    ALLOWED_AMBIENTES.includes(v)
+  );
+  return clean;
 }
 
 async function redisCommand(...args) {
@@ -70,13 +78,14 @@ module.exports = async function handler(req, res) {
           return;
         }
       }
-      if (!ALLOWED_AMBIENTES.includes(input.ambiente)) {
-        res.status(400).json({ error: "Ambiente inválido" });
+      const ambiente = sanitizeAmbiente(input.ambiente);
+      if (!ambiente.length) {
+        res.status(400).json({ error: "Selecciona al menos un ambiente válido" });
         return;
       }
       const records = await readRegistry();
-      const record = { id: crypto.randomUUID() };
-      for (const field of ALL_FIELDS) record[field] = sanitize(input[field]);
+      const record = { id: crypto.randomUUID(), ambiente };
+      for (const field of TEXT_FIELDS) record[field] = sanitize(input[field]);
       records.push(record);
       await writeRegistry(records);
       res.status(201).json(record);

@@ -77,6 +77,20 @@ th {
 
 tr:last-child td { border-bottom: none; }
 
+.filter-row th {
+  background: #fff;
+  padding: 0.4rem 0.85rem 0.65rem;
+}
+
+.filter-row input {
+  width: 100%;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: normal;
+}
+
 .delete-btn {
   background: transparent;
   color: #b3261e;
@@ -118,6 +132,33 @@ dialog::backdrop {
   border: 1px solid var(--border);
   border-radius: 6px;
   font-size: 0.9rem;
+}
+
+.ambiente-fieldset {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem 0.65rem;
+}
+
+.ambiente-fieldset legend {
+  font-size: 0.85rem;
+  color: var(--blue);
+  padding: 0 0.3rem;
+}
+
+.checkbox-label {
+  display: flex !important;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.3rem !important;
+  font-size: 0.9rem !important;
+  color: var(--text) !important;
+}
+
+.checkbox-label input {
+  width: auto !important;
+  margin-top: 0 !important;
 }
 
 .dialog-actions {
