@@ -7,7 +7,10 @@ const form = document.getElementById("new-form");
 const filterInputs = document.querySelectorAll("[data-filter]");
 
 let allRecords = [];
+let editingId = null;
 const filters = {};
+const dialogTitle = dialog.querySelector("h2");
+const submitBtn = form.querySelector('button[type="submit"]');
 
 function showError(message) {
   errorEl.textContent = message;
@@ -51,7 +54,10 @@ function render() {
   body.innerHTML = records.map((r) => `
     <tr data-id="${escapeHtml(r.id)}">
       ${COLUMNS.map((c) => `<td>${escapeHtml(displayValue(r, c))}</td>`).join("")}
-      <td><button class="delete-btn" data-id="${escapeHtml(r.id)}">Borrar</button></td>
+      <td class="row-actions">
+        <button class="edit-btn" data-id="${escapeHtml(r.id)}">Editar</button>
+        <button class="delete-btn" data-id="${escapeHtml(r.id)}">Borrar</button>
+      </td>
     </tr>
   `).join("");
 }
@@ -79,26 +85,56 @@ async function loadRegistry() {
 }
 
 body.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".delete-btn");
-  if (!btn) return;
-  const id = btn.dataset.id;
-  if (!confirm("¿Borrar este registro?")) return;
-  btn.disabled = true;
-  const res = await fetch(`/api/registry?id=${encodeURIComponent(id)}`, { method: "DELETE" });
-  if (res.status === 401) {
-    window.location.href = "/login.html";
+  const deleteBtn = e.target.closest(".delete-btn");
+  if (deleteBtn) {
+    const id = deleteBtn.dataset.id;
+    if (!confirm("¿Borrar este registro?")) return;
+    deleteBtn.disabled = true;
+    const res = await fetch(`/api/registry?id=${encodeURIComponent(id)}`, { method: "DELETE" });
+    if (res.status === 401) {
+      window.location.href = "/login.html";
+      return;
+    }
+    if (!res.ok) {
+      showError("No se pudo borrar el registro.");
+      deleteBtn.disabled = false;
+      return;
+    }
+    await loadRegistry();
     return;
   }
-  if (!res.ok) {
-    showError("No se pudo borrar el registro.");
-    btn.disabled = false;
-    return;
+
+  const editBtn = e.target.closest(".edit-btn");
+  if (editBtn) {
+    const record = allRecords.find((r) => r.id === editBtn.dataset.id);
+    if (!record) return;
+    openDialogForEdit(record);
   }
-  await loadRegistry();
 });
 
-document.getElementById("new-btn").addEventListener("click", () => {
+function openDialogForEdit(record) {
+  editingId = record.id;
   form.reset();
+  form.cliente.value = record.cliente || "";
+  form.proyecto.value = record.proyecto || "";
+  form.plataforma.value = record.plataforma || "";
+  form.cuenta.value = record.cuenta || "";
+  form.recurso.value = record.recurso || "";
+  form.descripcion.value = record.descripcion || "";
+  const selected = new Set(record.ambiente || []);
+  form.querySelectorAll('input[name="ambiente"]').forEach((cb) => {
+    cb.checked = selected.has(cb.value);
+  });
+  dialogTitle.textContent = "Editar registro";
+  submitBtn.textContent = "Guardar cambios";
+  dialog.showModal();
+}
+
+document.getElementById("new-btn").addEventListener("click", () => {
+  editingId = null;
+  form.reset();
+  dialogTitle.textContent = "Nuevo registro";
+  submitBtn.textContent = "Guardar";
   dialog.showModal();
 });
 
@@ -120,11 +156,12 @@ form.addEventListener("submit", async (e) => {
     showError("Selecciona al menos un ambiente.");
     return;
   }
-  const submitBtn = form.querySelector('button[type="submit"]');
   submitBtn.disabled = true;
   try {
-    const res = await fetch("/api/registry", {
-      method: "POST",
+    const url = editingId ? `/api/registry?id=${encodeURIComponent(editingId)}` : "/api/registry";
+    const method = editingId ? "PUT" : "POST";
+    const res = await fetch(url, {
+      method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
@@ -138,6 +175,7 @@ form.addEventListener("submit", async (e) => {
       return;
     }
     dialog.close();
+    editingId = null;
     clearError();
     await loadRegistry();
   } finally {

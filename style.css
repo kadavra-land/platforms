@@ -91,6 +91,18 @@ tr:last-child td { border-bottom: none; }
   font-weight: normal;
 }
 
+.row-actions {
+  display: flex;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.edit-btn {
+  background: transparent;
+  color: var(--blue);
+  border: 1px solid #1f4e7933;
+}
+
 .delete-btn {
   background: transparent;
   color: #b3261e;

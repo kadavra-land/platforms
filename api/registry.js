@@ -92,6 +92,38 @@ module.exports = async function handler(req, res) {
       return;
     }
 
+    if (req.method === "PUT") {
+      const id = req.query.id;
+      if (!id) {
+        res.status(400).json({ error: "Falta id" });
+        return;
+      }
+      const input = req.body || {};
+      for (const field of REQUIRED_FIELDS) {
+        if (!sanitize(input[field])) {
+          res.status(400).json({ error: `Falta el campo requerido: ${field}` });
+          return;
+        }
+      }
+      const ambiente = sanitizeAmbiente(input.ambiente);
+      if (!ambiente.length) {
+        res.status(400).json({ error: "Selecciona al menos un ambiente válido" });
+        return;
+      }
+      const records = await readRegistry();
+      const index = records.findIndex((r) => r.id === id);
+      if (index === -1) {
+        res.status(404).json({ error: "Registro no encontrado" });
+        return;
+      }
+      const record = { id, ambiente };
+      for (const field of TEXT_FIELDS) record[field] = sanitize(input[field]);
+      records[index] = record;
+      await writeRegistry(records);
+      res.status(200).json(record);
+      return;
+    }
+
     if (req.method === "DELETE") {
       const id = req.query.id;
       if (!id) {
